@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Inicio</title>
+	<meta charset="utf-8">
+	<!-- SCROLLS -->
+  	
+  	<link rel="stylesheet" href="lib/bootstrap.min.css" />
+  	<link rel="stylesheet" href="lib/font-awesome.min.css" />
+
+  	<base href="/">
+</head>
+<body ng-app="app">
+	<!-- CABEÇALHO -->
+	<header>
+		<nav class="navbar navbar-default" ng-controller="LoginCtrl">
+            <div class="container">
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="/">Aqui Peças</a>
+                </div>
+
+                <ul class="nav navbar-nav navbar-right">
+                	<li ng-if="!currentUser.email"><a href="#/login"><i class="fa fa-sign-in" aria-hidden="true"></i> Logar</a></li>
+                    <li><a href="#/"><i class="fa fa-home"></i> Inicio</a></li>
+                    <li><a href="#about"><i class="fa fa-shield"></i> Sobre</a></li>
+                    <li><a href="#contact"><i class="fa fa-comment"></i> Contato</a></li>
+                    <li ng-if="currentUser.email"><a href="" ng-click="logOut()"><i class="fa fa-sign-out"></i> Sair</a></li>
+                    
+                
+                </ul>
+            </div>
+        </nav>
+	</header>
+	<!--SINGLE PAGE-->
+
+	<div ng-view>
+		
+	</div>
+</body>
+
+<script type="text/javascript" src="/bower_components/angular/angular.js"></script>
+<script type="application/javascript" src="/bower_components/angular-route/angular-route.js"></script>
+<script src="/bower_components/angular-cookies/angular-cookies.js"></script>
+<script type="text/javascript" src="lib/firebase.js"></script>
+<script type="application/javascript" src="/lib/angularfire.min.js"></script>
+
+<!-- MEUS SCRIPTS-->
+<script type="application/javascript" src="app.js"></script>
+<script type="application/javascript" src="services/authentication.service.js"></script>
+<script src="/login/login.js"></script>
+
+<!-- FIREBASE -->
+
+
+<script type="text/javascript">
+    var config = {
+        apiKey: "AIzaSyCnBiA5rV0-0FnBOHC1px7wmMrLllsMP-A",
+        authDomain: "epecas-15395.firebaseapp.com",
+        databaseURL: "https://epecas-15395.firebaseio.com",
+        storageBucket: "epecas-15395.appspot.com",
+        messagingSenderId: "766082602769"
+    };
+    firebase.initializeApp(config);
+</script>
+
+
+</html>
