@@ -1,0 +1,36 @@
+<div ng-controller="DashboardCtrl" class="container-produtos">
+	<div ng-repeat="produto in produtos">
+		<div class="block" >
+		  <div class="top">
+		    <ul>
+		      <li>
+		      	<a href="#">
+		      		<i class="fa fa-star-o" aria-hidden="true"></i>
+		      	</a>
+		      </li>
+		      <li>
+		      	<span class="converse">{{ produto.categoria | categoriaByKey }}</span>
+		      </li>
+		      <li>
+		      	<a href="#">
+		      		<i class="fa fa-shopping-basket" aria-hidden="true"></i>
+		      	</a>
+		      </li>
+		    </ul>
+		  </div>
+		  
+		  <div class="middle crop">
+		    <img src="{{ produto.imagem }}" alt="pic" />
+		  </div>
+		  
+		  <div class="bottom">
+		    <div class="heading">Chuck Taylor All Star Classic Colours</div>
+		    <div class="info">Classic red converse edition</div>
+		    <div class="style">Color: Red / Style: M9621C</div>
+		    <div class="price">$50.00 <span class="old-price">$75.00</span></div>
+		  </div>  
+		</div>
+			
+	</div>
+	
+</div>

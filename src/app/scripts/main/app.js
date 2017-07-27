@@ -15,15 +15,19 @@
 	  	$locationProvider.hashPrefix('');
 	  	$routeProvider
 		  	.when('/login',{
-				templateUrl:'login/login_form.view.html',
+				templateUrl:'templates/login/login_form.view.html',
 				controller:'LoginCtrl'
 
 			}).when('/cadastro',{
-				templateUrl:'login/cadastro_form.view.html',
+				templateUrl:'templates/login/cadastro_form.view.html',
 				controller:'LoginCtrl'
 
+			}).when('/dashboard/produto',{
+				templateUrl:'templates/dashboard/listagem.produto.view.html',
+				controller:'DashboardCtrl'
+
 			})
-			.otherwise({redirectTo:'/'});
+			.otherwise({redirectTo:'/login'});
 			
 		/*	
 	  	$locationProvider.html5Mode({
@@ -39,7 +43,7 @@
 		    	AuthenticationService.GetCurrentUser();
 		    	$rootScope.currentUser = AuthenticationService.currentUser;
 		    	if($rootScope.currentUser){
-		    		 $location.path('/');	
+		    		 $location.path('/dashboard/produto');	
 		    	}else{
 		        	$rootScope.currentUser = AuthenticationService.currentUser;
 		        }

@@ -7,15 +7,12 @@
 
 
 	//Injetando Dependencias, e Serviços
-	LoginCtrl.$inject = ['$location','AuthenticationService','$scope'];
+	LoginCtrl.$inject = ['$location',
+						'AuthenticationService',
+						'APIService',
+						'$scope'];
 
-	function LoginCtrl($location,AuthenticationService,$scope,$firebaseAuth){
-		
-		(function initController() {
-            // reset login status
-            AuthenticationService.ClearCredentials();
-        })();
-
+	function LoginCtrl($location,AuthenticationService,APIService,$scope,$firebaseAuth,$firebaseObject){
 		/*
 			AUTENTICAÇÃO DE USUARIO
 		*/
@@ -25,13 +22,28 @@
 				if(resposta.uid){
 					//console.log(resposta);
 					alert("Seja Bem Vindo: " + resposta.email );
-					$location.path('/');
+					$location.path('/dashboard/produto');
 				}else{
 					alert(resposta.message);
 				}
 			});
 		}
 
+		/*
+			REGISTRO DE USUARIO
+		*/
+		$scope.registro = function(user){
+			AuthenticationService.Registro(user.email,user.senha,function(resposta){
+				if(resposta.uid){
+					alert("Usuario criado: " + resposta.uid);
+					var refUsers = firebase.database().ref("users");
+					refUsers.child(resposta.uid).set(user);
+					$location.path('/login');
+				}else{
+					alert(resposta.message);
+				}
+			});
+		}
 		/*
 			Logout do Usuario
 		*/
