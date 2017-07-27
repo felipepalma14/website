@@ -16,8 +16,9 @@
                 return $firebaseArray(empresas);
             },
             getProdutos : function getProdutos(){
-                var produtos = ref.child('produtos');
-                return $firebaseArray(produtos);
+                let produtos = ref.child('produtos');
+                let retorno = $firebaseArray(produtos);
+                return retorno;
             },            
 
             getCategoria: function getCategoria(categoria,callback){
@@ -27,14 +28,36 @@
                     .on("child_added",function(snap){
                         retorno = snap.val();
                         
-                        callback(retorno); 
+                        return callback(retorno); 
                     });
             },
             
             getCategorias: function getCategorias(){
-                return $firebaseArray(ref.child('categorias'));
+                let categorias = $firebaseArray(ref.child('categorias'));
+                return categorias;
 
-            }
+            },
+
+            getModelo: function getModelo(keyModelo,callback){
+                var retorno;
+                ref.child("modelos/"+keyModelo+"/modelo")
+                    .on("child_added",function(snap){
+                        retorno = snap.val();
+                        console.log(retorno);
+                        return callback(retorno); 
+                    });
+                /*
+                modelo.$loaded().then(function(r){
+                    return callback(r.modelo.nome);
+                });
+                */
+
+            },
+            getModelos: function getModelos(){
+                let modelos = $firebaseArray(ref.child('modelos'));
+                return modelos;
+
+            },
 
         };
 

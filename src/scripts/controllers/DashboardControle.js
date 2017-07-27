@@ -13,14 +13,19 @@
 
 		function DashboardCtrl($location,AuthenticationService,APIService,$scope){	
 			$scope.produtos  = APIService.getProdutos();
-			
-			$scope.teste = function(categoria){
-				//console.log(Object.keys(categoria)[0]); 
-				APIService.getCategoria(Object.keys(categoria)[0],function(result){
-					//console.log(result);
-				});
-			
-			};
+			$scope.categorias = APIService.getCategorias();
+			$scope.modelos = APIService.getModelos();
 
+			$scope.modeloTeste  = function(key){
+				var resultado;
+				var modelo = APIService.getModelo(Object.keys(key)[0],function(result){
+					
+					result.then(function(r){
+						resultado = r.modelo.nome;
+						console.log(r.modelo.nome);
+					});
+				});
+				return resultado;
+			}
 		}
 }) ();
