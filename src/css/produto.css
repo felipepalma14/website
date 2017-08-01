@@ -7,6 +7,11 @@
   letter-spacing: 1px;
   box-sizing: border-box;
 }
+.container{
+  width: 90%;
+  margin: 0 auto;
+}
+
 .container-produtos {
   background: #f9fafa;
   padding: 20px;
@@ -19,6 +24,7 @@
   -ms-flex-wrap: wrap;
       flex-wrap: wrap;
 }
+
 .block {
   margin: 20px;
   border-radius: 4px;

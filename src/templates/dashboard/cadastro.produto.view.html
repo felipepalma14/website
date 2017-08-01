@@ -1,3 +1,76 @@
 <div ng-controller="DashboardCtrl">
-	
+	<div class="container">
+		<div>
+			<form>
+				<div class="form-group">
+					<label for="produtoNome">Produto </label>
+					<input type="text" class="form-control" id="produtoNome" name="produtoNome" ng-model="produto.nome">
+				</div>
+				<div class="form-group">
+					<label for="produtoPreco">Preço</label>
+					<input type="text" class="form-control" id="produtoPreco" name="produtoPreco" ng-model="produto.preco">
+				</div>
+				<div class="form-group">
+					<label for="produtoDescricao">Descrição </label>
+					<textarea class="form-control" rows="3" id="produtoDescricao" name="produtoDescricao" ng-model="produto.descricao"></textarea>
+				</div>
+				
+		        <div>
+		            <label for="produtoImagem">Imagem do Produto</label>
+		            
+		            <input id="produtoImagem" 
+		                type="file" 
+		                accept="image/*" 
+		                image="produto.imagem" 
+		                resize-max-height="230"
+		                resize-max-width="230"
+		                resize-quality="0.9" />
+		            
+		            <!--<p>Original</p>
+		            <img ng-show="image2" ng-src="{{image2.url}}" type="{{image2.file.type}}"/>
+		            <p>Resized</p>-->
+		            <img ng-show="produto.imagem" ng-src="{{produto.imagem.resized.dataURL}}"/>
+		            <button type="submit" ng-click="single(produto.imagem.resized)">Mostrar Log</button>
+		        </div>
+
+				<div class="form-group">
+					<select class="form-control"  ng-model="produto.categoria" ng-options="categoria.categoria for categoria in categorias"></select>
+
+					<select class="form-control" ng-model ="carro.marca" ng-options="marca as marca.nome for marca in marcas track by marca.codigo" ng-change="encontrarModelos(carro.marca)">
+						<option selected>Selecione Marca</option>
+					</select>
+					<select class="form-control" ng-model ="carro.modelo" ng-options="modelo as modelo.nome for modelo in modelos track by modelo.codigo"  ng-change="encontrarAnos(carro.marca,carro.modelo)">
+						<option>Selecione Modelo</option>
+					</select>
+					<select class="form-control" ng-model ="carro.ano" ng-options="ano as ano.nome for ano in anos track by ano.codigo" >
+						<option>Selecione Ano</option>
+					</select>
+
+				</div>
+					
+					<button class="btn btn-primary">Adicionar Marca/Modelo</button>
+					<table class="table">
+						<thead>
+							<td>
+								<th>Marca</th>
+							</td>
+							<td>
+								<th>Modelo</th>
+							</td>
+							<td>
+								<th>Ano</th>
+							</td>	
+						</thead>
+						<tbody>
+							
+						</tbody>
+						
+					</table>	
+
+				<button class="btn btn-success">Adicionar Produto</button>
+
+				<button class="btn btn-danger">Cancelar</button>
+			</form>				
+		</div>
+	</div>	
 </div>

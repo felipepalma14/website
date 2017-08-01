@@ -5,7 +5,8 @@
 		.module('app', [
 			'ngRoute',
 			'ngCookies',
-			'firebase'
+			'firebase',
+			'imageupload'
 		])
 		.config(config)
 		.run(run);
@@ -26,9 +27,12 @@
 				templateUrl:'templates/dashboard/listagem.produto.view.html',
 				controller:'DashboardCtrl'
 
+			}).when('/dashboard/produto/cadastro',{
+				templateUrl:'templates/dashboard/cadastro.produto.view.html',
+				controller:'DashboardCtrl'
+
 			})
 			.otherwise({redirectTo:'/login'});
-			
 		/*	
 	  	$locationProvider.html5Mode({
 		  enabled: true,
@@ -42,12 +46,10 @@
 		    $rootScope.$on("$locationChangeStart", function(event, next, current) {
 		    	AuthenticationService.GetCurrentUser();
 		    	$rootScope.currentUser = AuthenticationService.currentUser;
-		    	if($rootScope.currentUser){
-		    		 $location.path('/dashboard/produto');	
-		    	}else{
-		        	$rootScope.currentUser = AuthenticationService.currentUser;
-		        }
+
+		    	
 		    });
+		    
 		}
 })();
 

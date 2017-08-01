@@ -43,7 +43,6 @@
                 ref.child("modelos/"+keyModelo+"/modelo")
                     .on("child_added",function(snap){
                         retorno = snap.val();
-                        console.log(retorno);
                         return callback(retorno); 
                     });
                 /*

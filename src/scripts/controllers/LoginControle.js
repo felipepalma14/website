@@ -10,19 +10,26 @@
 	LoginCtrl.$inject = ['$location',
 						'AuthenticationService',
 						'APIService',
+						'$rootScope',
 						'$scope'];
 
-	function LoginCtrl($location,AuthenticationService,APIService,$scope,$firebaseAuth,$firebaseObject){
+	function LoginCtrl($location,AuthenticationService,APIService,$rootScope,$scope,$firebaseAuth,$firebaseObject){
 		/*
 			AUTENTICAÇÃO DE USUARIO
 		*/
+		(function() {
+			if($rootScope.currentUser != null){
+				$location.path('dashboard/produto');
+			}
+		})();
+		
 
 		$scope.login = function(email,senha){
 			AuthenticationService.Login(email,senha, function(resposta){
 				if(resposta.uid){
 					//console.log(resposta);
 					alert("Seja Bem Vindo: " + resposta.email );
-					$location.path('/dashboard/produto');
+					$location.path('#/dashboard/produto');
 				}else{
 					alert(resposta.message);
 				}
