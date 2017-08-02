@@ -25,6 +25,16 @@
       flex-wrap: wrap;
 }
 
+.lado-direito{
+  margin: 10px;
+  width: 40%;
+  float: left;
+}
+
+.lado-esquerdo{
+  width: 50%;
+  float: right;
+}
 .block {
   margin: 20px;
   border-radius: 4px;
