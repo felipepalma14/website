@@ -1,7 +1,7 @@
 <div ng-controller="DashboardCtrl">
 	<div class="container">
 		<div>
-			<form>
+			<form ng-submit="addProdutoToFirebase(produto)">
 				<div class="lado-direito">
 					<div class="form-group">
 						<label for="produtoNome">Produto</label>
@@ -25,10 +25,7 @@
 						<textarea class="form-control" rows="2" id="produtoDescricao" name="produtoDescricao" ng-model="produto.descricao"></textarea>
 					</div>
 					
-			        
-				</div>
-				<div class="lado-esquerdo">
-					<div>
+			        <div>
 			            <label for="produtoImagem">Imagem do Produto</label>
 			            
 			            <input id="produtoImagem" 
@@ -38,9 +35,12 @@
 			                resize-max-height="230"
 			                resize-max-width="230"
 			                resize-quality="0.9" />
-			            <img ng-show="produto.imagem" ng-src="{{produto.imagem.resized.dataURL}}"/>
+			            <img style="width: 150px; height: 150px;" ng-show="produto.imagem" ng-src="{{produto.imagem.resized.dataURL}}"/>
 			            <!--<button type="submit" ng-click="single(produto.imagem.resized)">Mostrar Log</button>-->
 			        </div>
+				</div>
+				<div class="lado-esquerdo">
+					
 					<h2>Selecione o Carro</h2>
 					<div class="form-group">
 						<select class="form-control" ng-model ="carro.marca" ng-options="marca as marca.nome for marca in marcas track by marca.codigo" ng-change="encontrarModelos(carro.marca)">
@@ -54,8 +54,8 @@
 
 					</div>
 						
-					<button class="btn btn-primary" ng-click="addMarcaModelo(carro)">Adicionar Marca/Modelo</button>
-						<table class="table">
+					<button type="button" class="btn btn-primary" ng-click="addMarcaModelo(carro)">Adicionar Marca/Modelo</button>
+						<table class="table table-fixed">
 							<thead>
 								<tr>
 									<th>Marca</th>
@@ -64,21 +64,20 @@
 									<th>Excluir</th>
 								</tr>	
 							</thead>
-							<tbody ng-repeat="item in carros">
-								<tr>
-									<td>{{ item.marca.nome }}</td>
-									<td>{{ item.modelo.nome }}</td>
-									<td>{{ item.ano.nome }}</td>
-									<td> <button>X</button> </td>
+							<tbody >
+								<tr ng-repeat="item in carros">
+									<td class="filterable-cell">{{ item.marca.nome }}</td>
+									<td class="filterable-cell">{{ item.modelo.nome }}</td>
+									<td class="filterable-cell">{{ item.ano.nome }}</td>
+									<td class="filterable-cell"> <button>X</button> </td>
 								</tr>
 							</tbody>
 							
 						</table>	
-
 					<button class="btn btn-success">Adicionar Produto</button>
 
 					<button class="btn btn-danger">Cancelar</button>
-			
+					
 				</div>
 		    </form>				
 		</div>

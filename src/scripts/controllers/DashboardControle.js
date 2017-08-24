@@ -46,9 +46,7 @@
 				.then(function(resposta) {
 					//console.log(resposta.data.modelos);
                     $scope.modelos = resposta.data.modelos;
-                    $scope.carro.modelo = resposta.data.modelos[0];//$scope.modelos[0];
-
-                    
+                    $scope.carro.modelo = resposta.data.modelos[0];//$scope.modelos[0];                    
                 });
 			};
 			
@@ -78,5 +76,26 @@
 				console.log(novoCarro);
 				$scope.carros.push(novoCarro);
 			};
+
+			/*
+				Cadastro de Produto To Firebase
+			*/
+
+			$scope.addProdutoToFirebase = function (produto){
+
+				var keyCategoria = {};
+				keyCategoria[produto.categoria.$id] = true;
+
+				produto.categoria = keyCategoria;
+				produto.imagem = produto.dataURL;
+
+				console.log(produto);
+			};
+
+			$scope.reset = function(){
+				$scope.produto = {};
+				$scope.carros = {};
+			};
+
 		}
 }) ();

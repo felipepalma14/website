@@ -4,19 +4,37 @@
 	vertical-align: middle;
 }
 
-table {
-	margin-top: 20px;
-    font-family: arial, sans-serif;
-    border-collapse: collapse;
-    width: 100%;
-}
+        table {
+            width: 100%;
+        }
 
-td, th {
-    border: 1px solid #dddddd;
-    text-align: left;
-    padding: 8px;
-}
+        thead, tbody, tr, td, th { display: block; }
 
-tr:nth-child(even) {
-    background-color: #dddddd;
-}
+        tr:after {
+            content: ' ';
+            display: block;
+            visibility: hidden;
+            clear: both;
+        }
+
+        thead th {
+            height: 30px;
+
+            /*text-align: left;*/
+        }
+
+        tbody {
+            height: 200px;
+            overflow-y: auto;
+        }
+
+        thead {
+            /* fallback */
+        }
+
+
+        tbody td, thead th {
+        	height: 10%;
+            width: 20%;
+            float: left;
+        }

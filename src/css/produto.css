@@ -35,6 +35,10 @@
   width: 50%;
   float: right;
 }
+
+.lado-esquerdo select {
+  width: 180px;
+}
 .block {
   margin: 20px;
   border-radius: 4px;
