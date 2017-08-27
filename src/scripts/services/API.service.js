@@ -6,13 +6,12 @@
         .factory('APIService', APIService);
 
     APIService.$inject = ['$http', '$cookies', '$rootScope', '$timeout','$firebaseArray','$firebaseObject'];
+    
     function APIService($http, $cookies, $rootScope, $timeout,$firebaseArray,$firebaseObject) {
         var ref = firebase.database().ref();
         var service = {
             getEmpresas : function getEmpresas(){
                 var empresas = ref.child("empresas");
-                // create a synchronized array
-                // click on `index.html` above to see it used in the DOM!
                 return $firebaseArray(empresas);
             },
             getProdutos : function getProdutos(){
@@ -52,12 +51,49 @@
                 */
 
             },
+
+            getMarcas: function getMarcas(){
+                let marcas = $firebaseArray(ref.child('marcas'));
+                return marcas;
+
+            },
             getModelos: function getModelos(){
                 let modelos = $firebaseArray(ref.child('modelos'));
                 return modelos;
 
             },
+            getAnos: function getAnos(){
+                let anos = $firebaseArray(ref.child('anos'));
+                return anos;
 
+            },
+
+            addMarca: function addMarca(marca,callback){
+                //getMarcas().$add(marca);
+                let marcas = $firebaseArray(ref.child('marcas'));
+                var retorno = null;
+
+                marcas.$loaded(function(data){
+                    var encontrei = false;
+                    for(var i =0; i < data.length;i++){
+                        
+                        if(data[i].codigo === marca.codigo){
+                            console.log("achei");   
+                            encontrei = true;
+                        }
+                    }
+                    if(encontrei === false){
+                        console.log("nao encontrei,vou adc");
+                        marcas.$add(marca).then(function(result){
+                            //console.log(result.key);
+                            retorno = result.key;
+                            return callback(retorno);
+                        });
+                    }
+
+                });
+
+            }
         };
 
         return service;

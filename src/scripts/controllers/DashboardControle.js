@@ -9,7 +9,9 @@
 		.module('app')
 		.controller('DashboardCtrl', DashboardCtrl);
 
-		DashboardCtrl.$inject = ['$http','AuthenticationService','APIService','FIPEService','$scope'];
+		DashboardCtrl.$inject = ['$http',
+								'AuthenticationService',
+								'APIService','FIPEService','$scope'];
 
 		function DashboardCtrl($http,AuthenticationService,APIService,FIPEService,$scope){
 			$scope.marcas  =  [];	
@@ -18,6 +20,8 @@
 
 			$scope.carro = {};
 
+
+				console.log(APIService.getMarcas());
 
 			$scope.produtos  = APIService.getProdutos();
 			$scope.categorias = APIService.getCategorias();
@@ -34,12 +38,7 @@
                     //$scope.encontrarAnos($scope.carro.marca,$scope.carro.modelo);
                 });
 
-			})();
-			$scope.single = function(image) {
-                    console.log(image);
-             };
-
-            
+			})();            
 			
 			$scope.encontrarModelos = function(marca){
 				FIPEService.getModelosFIPE(marca)
@@ -85,11 +84,22 @@
 
 				var keyCategoria = {};
 				keyCategoria[produto.categoria.$id] = true;
-
+				produto.categoria = null;
 				produto.categoria = keyCategoria;
-				produto.imagem = produto.dataURL;
+				console.log(produto.imagem);
+				produto.imagem = produto.imagem.dataURL;
+				produto.empresa = AuthenticationService.currentUser.uid;
 
-				console.log(produto);
+				for(let i=0; i < $scope.carros.length; i ++){
+					console.log($scope.carros[i]);
+					/*
+					APIService.addMarca($scope.carros[i].marca,function(result){
+						console.log("Key: " + result);
+					});
+					*/
+				}
+				
+				//console.log(produto);
 			};
 
 			$scope.reset = function(){
