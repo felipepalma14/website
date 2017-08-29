@@ -86,17 +86,39 @@
 				keyCategoria[produto.categoria.$id] = true;
 				produto.categoria = null;
 				produto.categoria = keyCategoria;
-				console.log(produto.imagem);
-				produto.imagem = produto.imagem.dataURL;
+				var nomeImagem  = produto.imagem.file.name;
+				produto.imagem.file;
 				produto.empresa = AuthenticationService.currentUser.uid;
+				//produto.imagem = produto.imagem.dataURL;
+				
+				var storageRef = firebase.storage().ref('produtos/'+ nomeImagem);
+                var uploadTask = storageRef.put(produto.imagem.file);//(produto.imagem);
+                var downloadURL = '';
+                
+                /*
+                uploadTask.on('state_changed', function(snapshot){
+                          // Observe state change events such as progress, pause, and resume
+                          // See below for more detail
+                        }, function(error) {
+                          // Handle unsuccessful uploads
+                        }, function() {
+                          downloadURL = uploadTask.snapshot.downloadURL;
+                          console.log(downloadURL);
+                        }
+                );
+				*/
 
 				for(let i=0; i < $scope.carros.length; i ++){
 					console.log($scope.carros[i]);
-					/*
+					
 					APIService.addMarca($scope.carros[i].marca,function(result){
 						console.log("Key: " + result);
+						//console.log(APIService.addModelo());
 					});
-					*/
+					APIService.addAno($scope.carros[i].ano,function(result){
+						console.log("Key: " + result);
+						//console.log(APIService.addModelo());
+					});
 				}
 				
 				//console.log(produto);
