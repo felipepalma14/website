@@ -116,9 +116,27 @@
                     }
                 });
             },
-            addModelo: function addModelo(){
-                return this.getModelos();
-
+            addModelo: function addModelo(modelo,callback){
+                var modelos = this.getModelos();
+                modelos.$loaded(function(data){
+                    var encontrei = false;
+                    for(var i =0; i < data.length;i++){
+                        
+                        if(data[i].codigo === modelo.codigo){
+                            console.log("achei");   
+                            encontrei = true;
+                            return callback(data[i]);
+                        }
+                    }
+                    if(encontrei === false){
+                        console.log("nao encontrei,vou adc");
+                        modelos.$add(modelo).then(function(result){
+                            //console.log(result.key);
+                            
+                            return callback(result);
+                        });
+                    }
+                });
             }
         };
 

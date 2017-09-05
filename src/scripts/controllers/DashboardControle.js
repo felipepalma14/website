@@ -21,8 +21,6 @@
 			$scope.carro = {};
 
 
-				console.log(APIService.getMarcas());
-
 			$scope.produtos  = APIService.getProdutos();
 			$scope.categorias = APIService.getCategorias();
 //APIService.getModelos();
@@ -76,10 +74,24 @@
 				$scope.carros.push(novoCarro);
 			};
 
+
+			function filtrarModelos (carros){
+				var modelos = [];
+				for(let i=0; i < $scope.carros.length; i++){
+					var modelo = $scope.carros[i].modelo;
+
+					if (modelos.indexOf(modelo) == -1) {
+					    modelos.push(modelo);
+					}
+
+				}	
+				console.log(modelos);
+				return modelos;
+			}
+				
 			/*
 				Cadastro de Produto To Firebase
 			*/
-
 			$scope.addProdutoToFirebase = function (produto){
 
 				var keyCategoria = {};
@@ -87,9 +99,8 @@
 				produto.categoria = null;
 				produto.categoria = keyCategoria;
 				var nomeImagem  = produto.imagem.file.name;
-				produto.imagem.file;
+
 				produto.empresa = AuthenticationService.currentUser.uid;
-				//produto.imagem = produto.imagem.dataURL;
 				
 				var storageRef = firebase.storage().ref('produtos/'+ nomeImagem);
                 var uploadTask = storageRef.put(produto.imagem.file);//(produto.imagem);
@@ -109,16 +120,30 @@
 				*/
 
 				for(let i=0; i < $scope.carros.length; i ++){
-					console.log($scope.carros[i]);
+					/* ADICIONA MARCA AO FIREBASE 
+						** retorna a KEY do objeto inserido
+						** se ja estiver a marca, apenas retorna a key
 					
-					APIService.addMarca($scope.carros[i].marca,function(result){
-						console.log("Key: " + result);
+					*/
+
+
+					APIService.addModelo($scope.carros[i].modelo,function(keyModelo){
+						console.log("Key modelo: " + keyModelo);
 						//console.log(APIService.addModelo());
 					});
-					APIService.addAno($scope.carros[i].ano,function(result){
-						console.log("Key: " + result);
+					
+					APIService.addMarca($scope.carros[i].marca,function(keyMarca){
+						console.log("Key: " + keyMarca);
 						//console.log(APIService.addModelo());
 					});
+					
+					APIService.addAno($scope.carros[i].ano,function(keyAno){
+						console.log("key Ano: " + keyAno);
+						
+					});
+
+
+					
 				}
 				
 				//console.log(produto);
