@@ -125,7 +125,7 @@
                         if(data[i].codigo === modelo.codigo){
                             console.log("achei");   
                             encontrei = true;
-                            return callback(data[i]);
+                            return callback(data[i].$id);
                         }
                     }
                     if(encontrei === false){
@@ -133,7 +133,7 @@
                         modelos.$add(modelo).then(function(result){
                             //console.log(result.key);
                             
-                            return callback(result);
+                            return callback(result.key);
                         });
                     }
                 });
