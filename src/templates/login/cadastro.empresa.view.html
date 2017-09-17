@@ -22,9 +22,21 @@
           </div>
           <div class="form-group">
             <label for="confirma">Confirma</label>
-            <input type="password" ng-model="confirma" class="form-control" id="confirma" placeholder="Confirme a senha">
+            <input type="password" ng-model="confirmaSenha" class="form-control" id="confirma" placeholder="Confirme a senha">
           </div>
-          <div id="map">
+          <div>
+            <label for="empresaImagem">Imagem da Empresa</label>
+            
+            <input id="empresaImagem" 
+                type="file" 
+                accept="image/*" 
+                image="user.imagem" 
+                resize-max-height="230"
+                resize-max-width="230"
+                resize-quality="0.9" />
+            <img style="width: 150px; height: 150px;" ng-show="user.imagem" ng-src="{{user.imagem.resized.dataURL}}"/>
+          </div>
+          
             
           </div>
           <table class="nav" align="center">

@@ -47,6 +47,7 @@
 			})();            
 
 			
+			
 			function pecasPorEmpresa(empresaKey){
 	            ref.child('produtos').once('value',function(dataSnapshotProdutos){
 	                dataSnapshotProdutos.forEach(function(childProduto){

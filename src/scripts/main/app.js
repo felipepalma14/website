@@ -17,11 +17,11 @@
 	  	$locationProvider.hashPrefix('');
 	  	$routeProvider
 		  	.when('/login',{
-				templateUrl:'templates/login/login_form.view.html',
+				templateUrl:'templates/login/login.empresa.view.html',
 				controller:'LoginCtrl'
 
 			}).when('/cadastro',{
-				templateUrl:'templates/login/cadastro_form.view.html',
+				templateUrl:'templates/login/cadastro.empresa.view.html',
 				controller:'LoginCtrl'
 
 			}).when('/dashboard/produto',{
@@ -51,6 +51,7 @@
 		    $rootScope.$on("$locationChangeStart", function(event, next, current) {
 		    	AuthenticationService.GetCurrentUser();
 		    	$rootScope.currentUser = AuthenticationService.currentUser;
+		    	
 		    });
 
 		}
