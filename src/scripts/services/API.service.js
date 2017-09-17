@@ -5,9 +5,10 @@
         .module('app')
         .factory('APIService', APIService);
 
-    APIService.$inject = ['$http', '$cookies', '$rootScope', '$timeout','$firebaseArray','$firebaseObject'];
+    APIService.$inject = ['$http', '$cookies', '$rootScope','AuthenticationService',
+                         '$timeout','$firebaseArray','$firebaseObject'];
     
-    function APIService($http, $cookies, $rootScope, $timeout,$firebaseArray,$firebaseObject) {
+    function APIService($http, $cookies, $rootScope,AuthenticationService, $timeout,$firebaseArray,$firebaseObject) {
         var ref = firebase.database().ref();
         var service = {
             getEmpresas : function getEmpresas(){
@@ -18,7 +19,7 @@
                 let produtos = ref.child('produtos');
                 let retorno = $firebaseArray(produtos);
                 return retorno;
-            },            
+            },         
 
             getCategoria: function getCategoria(categoria,callback){
                 var retorno;
@@ -44,12 +45,6 @@
                         retorno = snap.val();
                         return callback(retorno); 
                     });
-                /*
-                modelo.$loaded().then(function(r){
-                    return callback(r.modelo.nome);
-                });
-                */
-
             },
 
             getMarcas: function getMarcas(){
@@ -137,6 +132,40 @@
                         });
                     }
                 });
+            },
+            addProduto: function addProduto(produto,callback){
+                var produtos = this.getProdutos();
+                var keyCategoria = {};
+                keyCategoria[produto.categoria.$id] = true;
+                produto.categoria = null;
+                produto.categoria = keyCategoria;
+                produto.data_criacao = firebase.database.ServerValue.TIMESTAMP;
+                produto.data_atualizacao = firebase.database.ServerValue.TIMESTAMP;
+                var nomeImagem  = produto.imagem.file.name;
+                var storageRef = firebase.storage().ref('produtos/'+ nomeImagem);
+                var uploadTask = storageRef.put(produto.imagem.file);//(produto.imagem);
+                var downloadURL = '';
+                
+                
+                uploadTask.on('state_changed', function(snapshot){
+                          // Observe state change events such as progress, pause, and resume
+                          // See below for more detail
+                        }, function(error) {
+                          // Handle unsuccessful uploads
+                        }, function() {
+                            produto.imagem = uploadTask.snapshot.downloadURL;
+                            produtos.$add(produto).then(function(result){
+                            //console.log(result.key);
+                                var produtoEmpresaRef = $firebaseArray(ref.child("produtos/" + result.key + "/empresa"));
+                                var keyProdutoEmpresa = {};
+                                keyProdutoEmpresa[AuthenticationService.currentUser.uid] = true;
+                                produtoEmpresaRef.$add(keyProdutoEmpresa);
+                                return callback(result.key);
+                            });
+                          console.log(uploadTask.snapshot.downloadURL);
+                        }
+                );
+                
             }
         };
 

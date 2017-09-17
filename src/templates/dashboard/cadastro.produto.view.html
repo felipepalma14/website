@@ -69,7 +69,9 @@
 									<td class="filterable-cell">{{ item.marca.nome }}</td>
 									<td class="filterable-cell">{{ item.modelo.nome }}</td>
 									<td class="filterable-cell">{{ item.ano.nome }}</td>
-									<td class="filterable-cell"> <button>X</button> </td>
+									<td class="filterable-cell">
+										<button type="button" ng-click="remove(item)">X</button>
+									</td>
 								</tr>
 							</tbody>
 							

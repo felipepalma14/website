@@ -13,18 +13,23 @@
 								'AuthenticationService',
 								'APIService','FIPEService','$scope'];
 
-		function DashboardCtrl($http,$firebaseArray, AuthenticationService,APIService,FIPEService,$scope){
+		function DashboardCtrl($http,$firebaseArray,AuthenticationService,APIService,FIPEService,$scope){
 			$scope.marcas  =  [];	
 			$scope.modelos =  [];
 			$scope.anos    =  [];
 
 			$scope.carro = {};
 
+
 			var ref = firebase.database().ref();
 			
-			$scope.produtos  = APIService.getProdutos();
+			//$scope.produtos  = APIService.getProdutos();
+
 			$scope.categorias = APIService.getCategorias();
-//APIService.getModelos();
+			//APIService.getModelos();
+
+			$scope.produtos = [];
+			
 
 			(function(){
 				FIPEService.getMarcasFIPE()
@@ -35,17 +40,40 @@
                    	
                    	$scope.encontrarModelos($scope.carro.marca);
                     //$scope.encontrarAnos($scope.carro.marca,$scope.carro.modelo);
-                });
 
+			    });
+
+                pecasPorEmpresa(AuthenticationService.currentUser.uid);
 			})();            
-			
 
+			
+			function pecasPorEmpresa(empresaKey){
+	            ref.child('produtos').once('value',function(dataSnapshotProdutos){
+	                dataSnapshotProdutos.forEach(function(childProduto){
+	                    var id = childProduto.key;
+	                    var produto  = childProduto.val();
+	                    firebase.database().ref().child('produtos/' + id +'/empresa/').orderByKey().once('value',function(dataSnapshot){
+	                        dataSnapshot.forEach(function(child){
+	                        	var produtoEmpresaKey = Object.keys(child.val())[0];
+	                            //console.log("Produto/Empresa: " + produtoEmpresaKey);
+	                            //console.log("Empresa: " + empresaKey);
+	                            if(empresaKey === produtoEmpresaKey){
+	                            	console.log("adicionando produto");
+	                                $scope.produtos.push(produto);
+	                            }
+	                        });
+	                           
+	                    });
+	                });
+	            });            
+	        }
 			$scope.encontrarModelos = function(marca){
 				FIPEService.getModelosFIPE(marca)
 				.then(function(resposta) {
 					//console.log(resposta.data.modelos);
                     $scope.modelos = resposta.data.modelos;
-                    $scope.carro.modelo = resposta.data.modelos[0];//$scope.modelos[0];                    
+                    $scope.carro.modelo = resposta.data.modelos[0];//$scope.modelos[0]; 
+                    $scope.encontrarAnos(marca,$scope.carro.modelo);                  
                 });
 			};
 			
@@ -53,14 +81,19 @@
 
 				FIPEService.getAnosFIPE(marca,modelo)
 				.then(function(resposta) {
-					console.log(resposta.data);
+					console.log("anos: " + resposta.data);
                     $scope.anos = resposta.data;
                     $scope.carro.ano = $scope.anos[0];
                 });
                 
 			};
-
-
+			/*
+				Remove um item
+			*/
+			$scope.remove = function(item) { 
+				var index = $scope.carros.indexOf(item);
+			  	$scope.carros.splice(index, 1);     
+			}
 			/*
 				Criando lista de carros 
 			*/
@@ -76,108 +109,58 @@
 				$scope.carros.push(novoCarro);
 			};
 
-
-			function filtrarModelos (carros){
-				var modelos = [];
-				for(let i=0; i < $scope.carros.length; i++){
-					var modelo = $scope.carros[i].modelo;
-
-					if (modelos.indexOf(modelo) == -1) {
-					    modelos.push(modelo);
-					}
-
-				}	
-				console.log(modelos);
-				return modelos;
-			}
 				
 			/*
 				Cadastro de Produto To Firebase
 			*/
 			$scope.addProdutoToFirebase = function (produto){
+				APIService.addProduto(produto,function(resultKeyProduto){
+					var produtoModeloRef = $firebaseArray(ref.child("produtos/" + resultKeyProduto + "/modelo"));
 
-				var keyCategoria = {};
-				keyCategoria[produto.categoria.$id] = true;
-				produto.categoria = null;
-				produto.categoria = keyCategoria;
-				var nomeImagem  = produto.imagem.file.name;
+					for(let i=0; i < $scope.carros.length; i ++){
+						APIService.addModelo($scope.carros[i].modelo,function(resultKeyModelo){
+							var modeloRef = ref.child('modelos/'+ resultKeyModelo);
+		                    var modeloMarcaRef = modeloRef.child("marca");
 
-				produto.empresa = AuthenticationService.currentUser.uid;
-				
-				var storageRef = firebase.storage().ref('produtos/'+ nomeImagem);
-                var uploadTask = storageRef.put(produto.imagem.file);//(produto.imagem);
-                var downloadURL = '';
-                
-                /*
-                uploadTask.on('state_changed', function(snapshot){
-                          // Observe state change events such as progress, pause, and resume
-                          // See below for more detail
-                        }, function(error) {
-                          // Handle unsuccessful uploads
-                        }, function() {
-                          downloadURL = uploadTask.snapshot.downloadURL;
-                          console.log(downloadURL);
-                        }
-                );
-				*/
+		                    var modeloAnosRef = $firebaseArray(modeloRef.child("anos"));
 
-				
-				for(let i=0; i < $scope.carros.length; i ++){
-					console.log($scope.carros[i]);
-					APIService.addModelo($scope.carros[i].modelo,function(resultKeyModelo){
-						console.log("Modelo Firebase: " + resultKeyModelo);
-						var modeloRef = ref.child('modelos/'+ resultKeyModelo);
-	                    var modeloMarcaRef = modeloRef.child("marca");
+							APIService.addMarca($scope.carros[i].marca,function(resultKeyMarca){
+								var keyMarca = {};
+								keyMarca[resultKeyMarca]=true;
+		                    	modeloMarcaRef.set(keyMarca);	                    	
+							});
+							APIService.addAno($scope.carros[i].ano,function(resultKeyAno){
+								var keyAno = {};
+								keyAno[resultKeyAno]=true;
+								modeloAnosRef.$loaded(function(data){
+				                    var encontrei = false;
+				                    for(var i =0; i < data.length;i++){
+				                        var keyModeloAno = Object.keys(data[i])[0];
+				                        if(keyModeloAno === resultKeyAno){
+				                        	encontrei = true
+				                        	break
+				                        }
+				                    }
+				                    if(encontrei === false){
+				                        console.log("Ano nao existe, vou adc");
+										modeloAnosRef.$add(keyAno);	
+				                    }
+				                    
+				                });
 
-	                    var modeloAnosRef = $firebaseArray(modeloRef.child("anos"));
-
-						APIService.addMarca($scope.carros[i].marca,function(resultKeyMarca){
-							//console.log("Key: " + result);
-							//console.log(APIService.addModelo());
-							var keyMarca = {};
-							keyMarca[resultKeyMarca]=true;
-	                    	modeloMarcaRef.set(keyMarca);
-
-	                    	
-						});
-						APIService.addAno($scope.carros[i].ano,function(resultKeyAno){
-							//console.log("Key: " + result);
-							//console.log(APIService.addModelo());
-							var keyAno = {};
-							keyAno[resultKeyAno]=true;
-							modeloAnosRef.$loaded(function(data){
-			                    var encontrei = false;
-			                    for(var i =0; i < data.length;i++){
-			                        var keyModeloAno = Object.keys(data[i])[0];
-			                        console.log("TESTE: " + keyModeloAno + " - " + resultKeyAno);
-			                        if(keyModeloAno === resultKeyAno){
-			                        	encontrei = true
-			                        	break
-			                        }
-			                    }
-			                    if(encontrei === false){
-			                        console.log("Ano nao existe, vou adc");
-									modeloAnosRef.$add(keyAno);	
-			                    }
-			                    
-			                });
+							});
+							var keyProdutoModelo = {};
+							keyProdutoModelo[resultKeyModelo] = true;
+							produtoModeloRef.$add(keyProdutoModelo).then(function(result){
+	                            console.log("PRoduto Modelo : " + result);
+	                        });
 
 						});
-					});
-
-					/*
-					APIService.addMarca($scope.carros[i].marca,function(result){
-						console.log("Key: " + result);
-						//console.log(APIService.addModelo());
-					});
-					APIService.addAno($scope.carros[i].ano,function(result){
-						console.log("Key: " + result);
-						//console.log(APIService.addModelo());
-					});
-					*/
-				}
+					}
+				});
 				
-				//console.log(produto);
+				alert("Produto Cadastrado");
+				
 			};
 
 			$scope.reset = function(){

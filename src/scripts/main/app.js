@@ -3,6 +3,7 @@
 	//iniciando aplicação
 	angular
 		.module('app', [
+			'ui.bootstrap',
 			'ngRoute',
 			'ngCookies',
 			'firebase',
@@ -31,6 +32,10 @@
 				templateUrl:'templates/dashboard/cadastro.produto.view.html',
 				controller:'DashboardCtrl'
 
+			}).when('/dashboard/produto/edita',{
+				templateUrl:'templates/dashboard/editar.produto.view.html',
+				controller:'DashboardCtrl'
+
 			})
 			.otherwise({redirectTo:'/login'});
 		/*	
@@ -46,10 +51,8 @@
 		    $rootScope.$on("$locationChangeStart", function(event, next, current) {
 		    	AuthenticationService.GetCurrentUser();
 		    	$rootScope.currentUser = AuthenticationService.currentUser;
-
-		    	
 		    });
-		    
+
 		}
 })();
 
