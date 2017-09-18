@@ -167,6 +167,7 @@
 				});
 				
 				alert("Produto Cadastrado");
+				$location.path('/dashboard/produto');
 				
 			};
 
