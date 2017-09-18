@@ -1,0 +1,89 @@
+<div ng-controller="DashboardCtrl">
+	<div class="container">
+		<div>
+			<form  ng-submit="addProdutoToFirebase(produto)">
+				<div class="lado-direito">
+					<div class="form-group">
+						<label for="produtoNome">Produto</label>
+						<input type="text" class="form-control" id="produtoNome" name="produtoNome" ng-model="produto.nome">
+					</div>
+					<div class="form-group">
+						<label for="produtoReferencia">Referencia</label>
+						<input type="text" class="form-control" id="produtoReferencia" name="produtoReferencia" ng-model="produto.referencia">
+					</div>
+					<div class="form-group">
+						<label for="produtoPreco">Preço</label>
+						<input type="text" class="form-control" id="produtoPreco" name="produtoPreco" ng-model="produto.preco">
+					</div>
+					<div class="form-group">
+						<label for="produtoCategoria">Categoria</label>
+						<select class="form-control"  id="produtoCategoria" ng-model="produto.categoria" ng-options="categoria.categoria for categoria in categorias"></select>
+					</div>
+						
+					<div class="form-group">
+						<label for="produtoDescricao">Descrição </label>
+						<textarea class="form-control" rows="2" id="produtoDescricao" name="produtoDescricao" ng-model="produto.descricao"></textarea>
+					</div>
+
+					
+			        
+			        <div>
+			            <label for="produtoImagem">Imagem do Produto</label>
+			            
+			            <input id="produtoImagem" 
+			                type="file" 
+			                accept="image/*" 
+			                image="produto.imagem" 
+			                resize-max-height="230"
+			                resize-max-width="230"
+			                resize-quality="0.9" />
+			            <img style="width: 150px; height: 150px;" ng-show="produto.imagem" ng-src="{{produto.imagem.resized.dataURL}}"/>
+			            <!--<button type="submit" ng-click="single(produto.imagem.resized)">Mostrar Log</button>-->
+			        </div>
+				</div>
+				<div class="lado-esquerdo">
+					
+					<h2>Selecione o Carro</h2>
+					<div class="form-group">
+						<select class="form-control" ng-model ="carro.marca" ng-options="marca as marca.nome for marca in marcas track by marca.codigo" ng-change="encontrarModelos(carro.marca)">
+						</select>
+						<select class="form-control" ng-model ="carro.modelo" ng-options="modelo as modelo.nome for modelo in modelos track by modelo.codigo"  ng-change="encontrarAnos(carro.marca,carro.modelo)">
+							<option>Selecione Modelo</option>
+						</select>
+						<select class="form-control" ng-model ="carro.ano" ng-options="ano as ano.nome for ano in anos track by ano.codigo" >
+							<option>Selecione Ano</option>
+						</select>
+
+					</div>
+						
+					<button type="button" class="btn btn-primary" ng-click="addMarcaModelo(carro)">Adicionar Marca/Modelo</button>
+						<table class="table table-fixed">
+							<thead>
+								<tr>
+									<th>Marca</th>
+									<th>Modelo</th>
+									<th>Ano</th>
+									<th>Excluir</th>
+								</tr>	
+							</thead>
+							<tbody >
+								<tr ng-repeat="item in carros">
+									<td class="filterable-cell">{{ item.marca.nome }}</td>
+									<td class="filterable-cell">{{ item.modelo.nome }}</td>
+									<td class="filterable-cell">{{ item.ano.nome }}</td>
+									<td class="filterable-cell">
+										<button type="button" ng-click="remove(item)">X</button>
+									</td>
+								</tr>
+							</tbody>
+							
+						</table>	
+					<button class="btn btn-success">Adicionar Produto</button>
+
+					<button class="btn btn-danger">Cancelar</button>
+					
+				</div>
+		    </form>				
+		</div>
+	</div>	
+</div>
