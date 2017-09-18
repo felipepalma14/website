@@ -9,11 +9,11 @@
 		.module('app')
 		.controller('DashboardCtrl', DashboardCtrl);
 
-		DashboardCtrl.$inject = ['$http','$firebaseArray',
-								'AuthenticationService',
+		DashboardCtrl.$inject = ['$http','$firebaseArray','$location',
+								'AuthenticationService','$rootScope',
 								'APIService','FIPEService','$scope'];
 
-		function DashboardCtrl($http,$firebaseArray,AuthenticationService,APIService,FIPEService,$scope){
+		function DashboardCtrl($http,$firebaseArray,$location,AuthenticationService,$rootScope,APIService,FIPEService,$scope){
 			$scope.marcas  =  [];	
 			$scope.modelos =  [];
 			$scope.anos    =  [];
@@ -32,18 +32,24 @@
 			
 
 			(function(){
-				FIPEService.getMarcasFIPE()
-				.then(function(resposta) {
-					//console.log(resposta.data);
-                    $scope.marcas = resposta.data;
-                    $scope.carro.marca = resposta.data[0];
-                   	
-                   	$scope.encontrarModelos($scope.carro.marca);
-                    //$scope.encontrarAnos($scope.carro.marca,$scope.carro.modelo);
+				if($rootScope.currentUser != null){
+					FIPEService.getMarcasFIPE()
+					.then(function(resposta) {
+						//console.log(resposta.data);
+	                    $scope.marcas = resposta.data;
+	                    $scope.carro.marca = resposta.data[0];
+	                   	
+	                   	$scope.encontrarModelos($scope.carro.marca);
+	                    //$scope.encontrarAnos($scope.carro.marca,$scope.carro.modelo);
 
-			    });
+				    });
 
-                pecasPorEmpresa(AuthenticationService.currentUser.uid);
+	                pecasPorEmpresa(AuthenticationService.currentUser.uid);
+				}else{
+
+					$location.path('/login');
+				}
+				
 			})();            
 
 			
