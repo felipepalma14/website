@@ -9,12 +9,12 @@
 	//Injetando Dependencias, e Serviços
 	LoginCtrl.$inject = ['$location',
 						'AuthenticationService',
-						'MapService',
 						'APIService',
 						'$rootScope',
 						'$scope'];
 
-	function LoginCtrl($location,AuthenticationService,MapService,APIService,$rootScope,$scope,$firebaseAuth,$firebaseObject){
+	function LoginCtrl($location,AuthenticationService,
+                    APIService,$rootScope,$scope, $firebaseAuth,$firebaseObject){
 		/*
 			AUTENTICAÇÃO DE USUARIO
 		*/
@@ -23,9 +23,18 @@
 				$location.path('dashboard/produto');
 			}
 		})();
-
-		
-
+    /*
+		 var vm = this;
+        NgMap.getMap().then(function(map) {
+          vm.showCustomMarker= function(evt) {
+            map.customMarkers.foo.setVisible(true);
+            map.customMarkers.foo.setPosition(this.getPosition());
+          };
+          vm.closeCustomMarker= function(evt) {
+            this.style.display = 'none';
+          };
+        });
+*/
 		$scope.login = function(email,senha){
 			AuthenticationService.Login(email,senha, function(resposta){
 				if(resposta.uid){

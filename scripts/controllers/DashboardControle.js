@@ -14,6 +14,8 @@
 								'APIService','FIPEService','$scope'];
 
 		function DashboardCtrl($http,$firebaseArray,$location,AuthenticationService,$rootScope,APIService,FIPEService,$scope){
+				
+
 			$scope.marcas  =  [];	
 			$scope.modelos =  [];
 			$scope.anos    =  [];
@@ -55,11 +57,12 @@
 			
 			
 			function pecasPorEmpresa(empresaKey){
-	            ref.child('produtos').once('value',function(dataSnapshotProdutos){
+	            ref.child('produtos').on('value',function(dataSnapshotProdutos){
+	            	$scope.produtos = [];
 	                dataSnapshotProdutos.forEach(function(childProduto){
 	                    var id = childProduto.key;
 	                    var produto  = childProduto.val();
-	                    firebase.database().ref().child('produtos/' + id +'/empresa/').orderByKey().once('value',function(dataSnapshot){
+	                    firebase.database().ref().child('produtos/' + id +'/empresa/').orderByKey().on('value',function(dataSnapshot){
 	                        dataSnapshot.forEach(function(child){
 	                        	var produtoEmpresaKey = Object.keys(child.val())[0];
 	                            //console.log("Produto/Empresa: " + produtoEmpresaKey);

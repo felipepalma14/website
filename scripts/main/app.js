@@ -7,7 +7,9 @@
 			'ngRoute',
 			'ngCookies',
 			'firebase',
-			'imageupload'
+			'imageupload',
+			
+			'ngMap'
 		])
 		.config(config)
 		.run(run);
