@@ -1,6 +1,9 @@
 <div ng-controller="DashboardCtrl">
 	<div class="container">
 		<div>
+			 <input type="text" ng-model="selected" placeholder="item name" uib-typeahead="item as item.nome for item in Allprodutos | filter:$viewValue | limitTo:8" class="form-control" typeahead-show-hint="true" 
+    typeahead-min-length="3" >
+    		<pre>{{ selected }}</pre>
 			<form  ng-submit="addProdutoToFirebase(produto)">
 				<div class="lado-direito">
 					<div class="form-group">
@@ -79,8 +82,7 @@
 							
 						</table>	
 					<button class="btn btn-success">Adicionar Produto</button>
-
-					<button class="btn btn-danger">Cancelar</button>
+					<a class="btn btn-danger" href="/">Cancelar</a>
 					
 				</div>
 		    </form>				

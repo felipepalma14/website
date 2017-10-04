@@ -25,7 +25,7 @@
 
 			var ref = firebase.database().ref();
 			
-			//$scope.produtos  = APIService.getProdutos();
+			$scope.Allprodutos  = APIService.getProdutos();
 
 			$scope.categorias = APIService.getCategorias();
 			//APIService.getModelos();
@@ -54,7 +54,6 @@
 				
 			})();            
 
-			
 			
 			function pecasPorEmpresa(empresaKey){
 	            ref.child('produtos').on('value',function(dataSnapshotProdutos){

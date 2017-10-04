@@ -38,6 +38,10 @@
 				templateUrl:'templates/dashboard/editar.produto.view.html',
 				controller:'DashboardCtrl'
 
+			}).when('/teste',{
+				templateUrl:'templates/teste/teste.html',
+				controller:'TesteCtrl'
+
 			})
 			.otherwise({redirectTo:'/login'});
 		/*	
