@@ -1,15 +1,19 @@
 <div ng-controller="DashboardCtrl">
 	<div class="container">
 		<div>
-			 <input type="text" ng-model="selected" placeholder="item name" uib-typeahead="item as item.nome for item in Allprodutos | filter:$viewValue | limitTo:8" class="form-control" typeahead-show-hint="true" 
-    typeahead-min-length="3" >
-    		<pre>{{ selected }}</pre>
+			 
 			<form  ng-submit="addProdutoToFirebase(produto)">
 				<div class="lado-direito">
 					<div class="form-group">
 						<label for="produtoNome">Produto</label>
-						<input type="text" class="form-control" id="produtoNome" name="produtoNome" ng-model="produto.nome">
+						<input type="text" ng-model="produtoType" class="form-control" id="produtoNome" name="produtoNome" placeholder="item name" uib-typeahead="item as item.nome for item in Allprodutos | filter:$viewValue | limitTo:8" class="form-control" typeahead-show-hint="true" 
+				    typeahead-min-length="3" />
 					</div>
+					
+					<!--<div class="form-group">
+						<label for="produtoNome">Produto</label>
+						<input type="text" class="form-control" id="produtoNome" name="produtoNome" ng-model="produto.nome">
+					</div>-->
 					<div class="form-group">
 						<label for="produtoReferencia">Referencia</label>
 						<input type="text" class="form-control" id="produtoReferencia" name="produtoReferencia" ng-model="produto.referencia">
@@ -40,8 +44,18 @@
 			                resize-max-height="230"
 			                resize-max-width="230"
 			                resize-quality="0.9" />
-			            <img style="width: 150px; height: 150px;" ng-show="produto.imagem" ng-src="{{produto.imagem.resized.dataURL}}"/>
+			            <div >
+			            	<img style="width: 150px; height: 150px;"
+			            	ng-show="produto.imagem.resized.dataURL"
+			            	ng-src="{{produto.imagem.resized.dataURL}}"/>	
+
+			            </div>
+
 			            <!--<button type="submit" ng-click="single(produto.imagem.resized)">Mostrar Log</button>-->
+			            <div >
+			            	<img style="width: 150px; height: 150px; margin:10px;" ng-show="produto.imagem" ng-src="{{ produto.imagem }}"/>
+			            </div>
+
 			        </div>
 				</div>
 				<div class="lado-esquerdo">

@@ -22,14 +22,14 @@
 					  
 					  <div class="bottom">
 					    <div class="heading">{{ produto.nome }}</div>
-					    <div class="info">{{ produto.modelo | modeloByKey }}</div>
+					    <div ng-repeat="modelo in produto.modelos">
+					    	<div class="info">{{ modelo | modeloByKey }}</div>
+						</div>
 					    <!--<div class="style">Color: Red / Style: M9621C</div>-->
 					    <div class="price">R${{ produto.preco }},00</div>
 					  </div>
 				</div>
-				
-			
-				
+							
 		</div>
 			
 	</div>

@@ -16,9 +16,10 @@ app
 	).filter('modeloByKey',['APIService',function(APIService){
 		var retorno;
 	    function modeloByKey(modelo){
-	        APIService.getModelo(Object.keys(modelo)[0],function(result){
+	    	var keyModelo = Object.keys(modelo)[0];
+	        APIService.getModelo(keyModelo,function(result){
 	            retorno =  result;
-	            //console.log(retorno);
+	            console.log("filter: " + keyModelo);
 	        });
 	        return retorno;
 	    }

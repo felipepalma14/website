@@ -71,14 +71,12 @@
                     var encontrei = false;
                     for(var i =0; i < data.length;i++){
                         
-                        if(data[i].codigo === marca.codigo){
-                            console.log("achei");   
+                        if(data[i].codigo === marca.codigo){ 
                             encontrei = true;
                             return callback(data[i].$id);
                         }
                     }
                     if(encontrei === false){
-                        console.log("nao encontrei,vou adc");
                         marcas.$add(marca).then(function(result){
                             //console.log(result.key);
                             retorno = result.key;
@@ -96,13 +94,11 @@
                     for(var i =0; i < data.length;i++){
                         
                         if(data[i].codigo === ano.codigo){
-                            console.log("achei");   
                             encontrei = true;
                             return callback(data[i].$id);
                         }
                     }
                     if(encontrei === false){
-                        console.log("nao encontrei,vou adc");
                         anos.$add(ano).then(function(result){
                             //console.log(result.key);
                             
@@ -118,13 +114,11 @@
                     for(var i =0; i < data.length;i++){
                         
                         if(data[i].codigo === modelo.codigo){
-                            console.log("achei");   
                             encontrei = true;
                             return callback(data[i].$id);
                         }
                     }
                     if(encontrei === false){
-                        console.log("nao encontrei,vou adc");
                         modelos.$add(modelo).then(function(result){
                             //console.log(result.key);
                             
@@ -133,41 +127,69 @@
                     }
                 });
             },
+           
             addProduto: function addProduto(produto,callback){
                 var produtos = this.getProdutos();
                 var keyCategoria = {};
                 keyCategoria[produto.categoria.$id] = true;
                 produto.categoria = null;
                 produto.categoria = keyCategoria;
-                produto.data_criacao = firebase.database.ServerValue.TIMESTAMP;
-                produto.data_atualizacao = firebase.database.ServerValue.TIMESTAMP;
-                var nomeImagem  = produto.imagem.file.name;
-                var storageRef = firebase.storage().ref('produtos/'+ nomeImagem);
-                var uploadTask = storageRef.put(produto.imagem.file);//(produto.imagem);
-                var downloadURL = '';
-                
-                
-                uploadTask.on('state_changed', function(snapshot){
+                if(produto.imagem['file']){
+                    var nomeImagem  = produto.imagem.file.name;
+                    var storageRef = firebase.storage().ref('produtos/'+ nomeImagem);
+                    var uploadTask = storageRef.put(produto.imagem.file);
+                    uploadTask.on('state_changed', function(snapshot){
                           // Observe state change events such as progress, pause, and resume
                           // See below for more detail
                         }, function(error) {
                           // Handle unsuccessful uploads
                         }, function() {
                             produto.imagem = uploadTask.snapshot.downloadURL;
-                            produtos.$add(produto).then(function(result){
-                            //console.log(result.key);
-                                var produtoEmpresaRef = $firebaseArray(ref.child("produtos/" + result.key + "/empresa"));
-                                var keyProdutoEmpresa = {};
-                                keyProdutoEmpresa[AuthenticationService.currentUser.uid] = true;
-                                produtoEmpresaRef.$add(keyProdutoEmpresa);
-                                return callback(result.key);
+                            produtos.$add({
+                                nome      : produto.nome,
+                                imagem    : produto.imagem,
+                                referencia: produto.referencia,
+                                categoria : produto.categoria,
+                                data_criacao :firebase.database.ServerValue.TIMESTAMP
+                            }).then(function(result){
+                                var produtoEmpresaRef = $firebaseArray(ref.child("produtoEmpresa"));
+                                var produtoEmpresa = {};
+                                produtoEmpresa['nome']       = produto.nome;
+                                produtoEmpresa['imagem']     = produto.imagem;
+                                produtoEmpresa['referencia'] = produto.referencia;
+                                produtoEmpresa['categoria']  = produto.categoria;
+                                produtoEmpresa['empresaKey'] = AuthenticationService.currentUser.uid;
+                                produtoEmpresa['data_atualizacao'] = firebase.database.ServerValue.TIMESTAMP;
+                                produtoEmpresa['descricao']  = produto.descricao;
+                                produtoEmpresa['produtoKey'] = result.key;
+                                produtoEmpresa['preco']      = produto.preco;
+
+                                produtoEmpresaRef.$add(produtoEmpresa).then(function(keyProdutoEmpresa){
+                                    return callback(keyProdutoEmpresa.key);
+                            
+                                });
+                                //return callback(result.key);
                             });
-                          console.log(uploadTask.snapshot.downloadURL);
+                        });
+                }
+            },
+            pecasPorEmpresa: function pecasPorEmpresa(empresaKey,callback){
+                ref.child('produtoEmpresa').on('value',function(dataSnapshotProdutos){
+                    var produtos = [];
+                    dataSnapshotProdutos.forEach(function(childProduto){
+                        var id = childProduto.key;
+                        var produto  = childProduto.val();
+                        if(produto.empresaKey === empresaKey){
+                            produtos.push(produto);
                         }
-                );
-                
+                    });
+                    return callback(produtos);
+                });            
             }
         };
+
+
+
 
         return service;
     }

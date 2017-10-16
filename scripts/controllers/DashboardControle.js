@@ -1,21 +1,15 @@
 (function() {
 	'use strict';
 	angular
-		/**
-		*  Module
-		*
-		* Description
-		*/
 		.module('app')
 		.controller('DashboardCtrl', DashboardCtrl);
 
-		DashboardCtrl.$inject = ['$http','$firebaseArray','$location',
-								'AuthenticationService','$rootScope',
-								'APIService','FIPEService','$scope'];
+		DashboardCtrl.$inject = ['$firebaseArray','$location',
+							'AuthenticationService','$rootScope',
+							'APIService','FIPEService','$scope'
+							];
 
-		function DashboardCtrl($http,$firebaseArray,$location,AuthenticationService,$rootScope,APIService,FIPEService,$scope){
-				
-
+		function DashboardCtrl($firebaseArray,$location,AuthenticationService,$rootScope,APIService,FIPEService,$scope){
 			$scope.marcas  =  [];	
 			$scope.modelos =  [];
 			$scope.anos    =  [];
@@ -28,7 +22,6 @@
 			$scope.Allprodutos  = APIService.getProdutos();
 
 			$scope.categorias = APIService.getCategorias();
-			//APIService.getModelos();
 
 			$scope.produtos = [];
 			
@@ -37,7 +30,6 @@
 				if($rootScope.currentUser != null){
 					FIPEService.getMarcasFIPE()
 					.then(function(resposta) {
-						//console.log(resposta.data);
 	                    $scope.marcas = resposta.data;
 	                    $scope.carro.marca = resposta.data[0];
 	                   	
@@ -46,36 +38,32 @@
 
 				    });
 
-	                pecasPorEmpresa(AuthenticationService.currentUser.uid);
+	                APIService.pecasPorEmpresa(AuthenticationService.currentUser.uid,
+	                	function(produtos){
+	                		console.log(produtos);
+	                		$scope.produtos = produtos;
+	                	});
 				}else{
 
 					$location.path('/login');
 				}
-				
 			})();            
 
 			
-			function pecasPorEmpresa(empresaKey){
-	            ref.child('produtos').on('value',function(dataSnapshotProdutos){
-	            	$scope.produtos = [];
-	                dataSnapshotProdutos.forEach(function(childProduto){
-	                    var id = childProduto.key;
-	                    var produto  = childProduto.val();
-	                    firebase.database().ref().child('produtos/' + id +'/empresa/').orderByKey().on('value',function(dataSnapshot){
-	                        dataSnapshot.forEach(function(child){
-	                        	var produtoEmpresaKey = Object.keys(child.val())[0];
-	                            //console.log("Produto/Empresa: " + produtoEmpresaKey);
-	                            //console.log("Empresa: " + empresaKey);
-	                            if(empresaKey === produtoEmpresaKey){
-	                            	console.log("adicionando produto");
-	                                $scope.produtos.push(produto);
-	                            }
-	                        });
-	                           
-	                    });
-	                });
-	            });            
-	        }
+			$scope.$watch('produtoType.$id', function(newValue, oldValue) {
+				if($scope.produtoType['$id'] != undefined){
+					$scope.produto = $scope.produtoType;
+
+					var keyCategoria = Object.keys($scope.produto['categoria'])[0];
+				  	
+				  	var index = $scope.categorias.$indexFor(keyCategoria);
+				  	$scope.produto.categoria = $scope.categorias[index];	
+				}else{
+					$scope.produto = {};
+				}
+			});
+			
+
 			$scope.encontrarModelos = function(marca){
 				FIPEService.getModelosFIPE(marca)
 				.then(function(resposta) {
@@ -94,7 +82,6 @@
                     $scope.anos = resposta.data;
                     $scope.carro.ano = $scope.anos[0];
                 });
-                
 			};
 			/*
 				Remove um item
@@ -123,59 +110,79 @@
 				Cadastro de Produto To Firebase
 			*/
 			$scope.addProdutoToFirebase = function (produto){
-				APIService.addProduto(produto,function(resultKeyProduto){
-					var produtoModeloRef = $firebaseArray(ref.child("produtos/" + resultKeyProduto + "/modelo"));
+				if($scope.produtoType['$id']){
+					$scope.produtoType['preco'] = produto.preco;
+					$scope.produtoType['descricao'] = produto.descricao;
+					$scope.produtoType['empresaKey'] = AuthenticationService.currentUser.uid;
+					var categoriaKey = {};
+					categoriaKey[$scope.produtoType.categoria.$id] = true;
+					$scope.produtoType['categoria'] = categoriaKey;
+					produto = $scope.produtoType;	
 
-					for(let i=0; i < $scope.carros.length; i ++){
-						APIService.addModelo($scope.carros[i].modelo,function(resultKeyModelo){
-							var modeloRef = ref.child('modelos/'+ resultKeyModelo);
-		                    var modeloMarcaRef = modeloRef.child("marca");
-
-		                    var modeloAnosRef = $firebaseArray(modeloRef.child("anos"));
-
-							APIService.addMarca($scope.carros[i].marca,function(resultKeyMarca){
-								var keyMarca = {};
-								keyMarca[resultKeyMarca]=true;
-		                    	modeloMarcaRef.set(keyMarca);	                    	
-							});
-							APIService.addAno($scope.carros[i].ano,function(resultKeyAno){
-								var keyAno = {};
-								keyAno[resultKeyAno]=true;
-								modeloAnosRef.$loaded(function(data){
-				                    var encontrei = false;
-				                    for(var i =0; i < data.length;i++){
-				                        var keyModeloAno = Object.keys(data[i])[0];
-				                        if(keyModeloAno === resultKeyAno){
-				                        	encontrei = true
-				                        	break
-				                        }
-				                    }
-				                    if(encontrei === false){
-				                        console.log("Ano nao existe, vou adc");
-										modeloAnosRef.$add(keyAno);	
-				                    }
-				                    
-				                });
-
-							});
-							var keyProdutoModelo = {};
-							keyProdutoModelo[resultKeyModelo] = true;
-							produtoModeloRef.$add(keyProdutoModelo).then(function(result){
-	                            console.log("PRoduto Modelo : " + result);
-	                        });
-
-						});
-					}
-				});
+					var produtoEmpresaRef = $firebaseArray(ref.child("produtoEmpresa"));
+					produtoEmpresaRef.$add($scope.produtoType).then(function(result){
+						var produtoModeloRef = $firebaseArray(ref.child("produtoEmpresa/" + result.key + "/modelos"));
+						
+						addModelosInPeca(produtoModeloRef);
+					});				
+				}else{
+					produto.nome = $scope.produtoType;
+					APIService.addProduto(produto,function(resultKeyProduto){
+					var produtoModeloRef = $firebaseArray(ref.child("produtoEmpresa/" + resultKeyProduto + "/modelos"));
+						addModelosInPeca(produtoModeloRef);					
+					});
+				}
 				
 				alert("Produto Cadastrado");
 				$location.path('/dashboard/produto');
-				
 			};
 
 			$scope.reset = function(){
 				$scope.produto = {};
 				$scope.carros = {};
+			};
+
+			function addModelosInPeca(refProdutoEmpresa){
+				for(let i=0; i < $scope.carros.length; i++){
+					APIService.addModelo($scope.carros[i].modelo,function(resultKeyModelo){
+						var modeloRef = ref.child('modelos/'+ resultKeyModelo);
+	                    var modeloMarcaRef = modeloRef.child("marca");
+
+	                    var modeloAnosRef = $firebaseArray(modeloRef.child("anos"));
+
+						APIService.addMarca($scope.carros[i].marca,function(resultKeyMarca){
+							var keyMarca = {};
+							keyMarca[resultKeyMarca]=true;
+	                    	modeloMarcaRef.set(keyMarca);	                    	
+						});
+						APIService.addAno($scope.carros[i].ano,function(resultKeyAno){
+							var keyAno = {};
+							keyAno[resultKeyAno]=true;
+							modeloAnosRef.$loaded(function(data){
+			                    var encontrei = false;
+			                    for(var i =0; i < data.length;i++){
+			                        var keyModeloAno = Object.keys(data[i])[0];
+			                        if(keyModeloAno === resultKeyAno){
+			                        	encontrei = true
+			                        	break
+			                        }
+			                    }
+			                    if(encontrei === false){
+			                        console.log("Ano nao existe, vou adc");
+									modeloAnosRef.$add(keyAno);	
+			                    }
+			                    
+			                });
+
+						});
+						var keyProdutoModelo = {};
+						keyProdutoModelo[resultKeyModelo] = true;
+						refProdutoEmpresa.$add(keyProdutoModelo).then(function(result){
+                            console.log("PRoduto Modelo : " + result);
+                        });
+
+					});
+				}
 			};
 
 		}
