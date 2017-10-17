@@ -8,7 +8,7 @@
 			'ngCookies',
 			'firebase',
 			'imageupload',
-			
+			//'uiGmapgoogle-maps',
 			'ngMap'
 		])
 		.config(config)

@@ -23,18 +23,25 @@
 				$location.path('dashboard/produto');
 			}
 		})();
-    /*
-		 var vm = this;
-        NgMap.getMap().then(function(map) {
-          vm.showCustomMarker= function(evt) {
-            map.customMarkers.foo.setVisible(true);
-            map.customMarkers.foo.setPosition(this.getPosition());
-          };
-          vm.closeCustomMarker= function(evt) {
-            this.style.display = 'none';
-          };
+
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(function(position) {
+        $scope.$apply(function() {
+          $scope.position = position;
         });
-*/
+      });
+    }
+
+
+    $scope.myFunc = function (evt) {
+      evt.stop();
+      $scope.positions = [];
+      $scope.positions.push({ lat: evt.latLng.lat(), lng: evt.latLng.lng()});
+      $scope.user.geoPos = { lat: evt.latLng.lat(), lng: evt.latLng.lng()};
+      console.log($scope.positions);
+    }
+
+   
 		$scope.login = function(email,senha){
 			AuthenticationService.Login(email,senha, function(resposta){
 				if(resposta.uid){
@@ -97,6 +104,14 @@
                   	.then(function(){
                     	var ref = firebase.database().ref().child('empresas');
                     	var regUser = firebase.auth().currentUser;
+
+                      regUser.sendEmailVerification().then(function() {
+                          // Email sent.
+                          console.log("Email enviado");
+                        }).catch(function(error) {
+                          // An error happened.
+                          console.log("Error");
+                        });
                     	//AuthenticationService.currentUser = regUser.uid;
                     	AuthenticationService.Logout(function(logout){
                     		console.log("saindo");
@@ -108,7 +123,8 @@
                           cnpj:user.cnpj,
                           date_criacao: firebase.database.ServerValue.TIMESTAMP,
                           email: user.email,
-                          imagem: downloadURL
+                          imagem: downloadURL,
+                          geoPos: user.geoPos
                         });
                   	$location.path('/login');
                   	alert("Cadastrado com sucesso!!!");

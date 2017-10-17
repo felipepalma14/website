@@ -40,7 +40,6 @@
 
 	                APIService.pecasPorEmpresa(AuthenticationService.currentUser.uid,
 	                	function(produtos){
-	                		console.log(produtos);
 	                		$scope.produtos = produtos;
 	                	});
 				}else{
@@ -78,7 +77,6 @@
 
 				FIPEService.getAnosFIPE(marca,modelo)
 				.then(function(resposta) {
-					console.log("anos: " + resposta.data);
                     $scope.anos = resposta.data;
                     $scope.carro.ano = $scope.anos[0];
                 });
@@ -110,25 +108,36 @@
 				Cadastro de Produto To Firebase
 			*/
 			$scope.addProdutoToFirebase = function (produto){
+				var empresas = {};
+                var produtosRef = null;
+                var produtosRefArray = null;
+                empresas[AuthenticationService.currentUser.uid] = true;
+
 				if($scope.produtoType['$id']){
+					console.log('if');
 					$scope.produtoType['preco'] = produto.preco;
 					$scope.produtoType['descricao'] = produto.descricao;
 					$scope.produtoType['empresaKey'] = AuthenticationService.currentUser.uid;
+					delete $scope.produtoType['empresas'];
 					var categoriaKey = {};
 					categoriaKey[$scope.produtoType.categoria.$id] = true;
 					$scope.produtoType['categoria'] = categoriaKey;
-					produto = $scope.produtoType;	
 
 					var produtoEmpresaRef = $firebaseArray(ref.child("produtoEmpresa"));
 					produtoEmpresaRef.$add($scope.produtoType).then(function(result){
 						var produtoModeloRef = $firebaseArray(ref.child("produtoEmpresa/" + result.key + "/modelos"));
-						
 						addModelosInPeca(produtoModeloRef);
-					});				
+
+					});	
+
+					produtosRef = ref.child('produtos/' + $scope.produtoType.$id + '/empresas');
+                	produtosRefArray = $firebaseArray(produtosRef);
+                	produtosRefArray.$add(empresas);			
 				}else{
+					console.log('else');
 					produto.nome = $scope.produtoType;
 					APIService.addProduto(produto,function(resultKeyProduto){
-					var produtoModeloRef = $firebaseArray(ref.child("produtoEmpresa/" + resultKeyProduto + "/modelos"));
+						var produtoModeloRef = $firebaseArray(ref.child("produtoEmpresa/" + resultKeyProduto + "/modelos"));
 						addModelosInPeca(produtoModeloRef);					
 					});
 				}

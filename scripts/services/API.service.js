@@ -131,10 +131,13 @@
             addProduto: function addProduto(produto,callback){
                 var produtos = this.getProdutos();
                 var keyCategoria = {};
+                
+
                 keyCategoria[produto.categoria.$id] = true;
                 produto.categoria = null;
                 produto.categoria = keyCategoria;
                 if(produto.imagem['file']){
+                    console.log("CAIU AQUI - NOVO");
                     var nomeImagem  = produto.imagem.file.name;
                     var storageRef = firebase.storage().ref('produtos/'+ nomeImagem);
                     var uploadTask = storageRef.put(produto.imagem.file);
@@ -146,11 +149,11 @@
                         }, function() {
                             produto.imagem = uploadTask.snapshot.downloadURL;
                             produtos.$add({
-                                nome      : produto.nome,
-                                imagem    : produto.imagem,
-                                referencia: produto.referencia,
-                                categoria : produto.categoria,
-                                data_criacao :firebase.database.ServerValue.TIMESTAMP
+                                nome            : produto.nome,
+                                imagem          : produto.imagem,
+                                referencia      : produto.referencia,
+                                categoria       : produto.categoria,
+                                data_criacao    : firebase.database.ServerValue.TIMESTAMP
                             }).then(function(result){
                                 var produtoEmpresaRef = $firebaseArray(ref.child("produtoEmpresa"));
                                 var produtoEmpresa = {};
@@ -164,11 +167,13 @@
                                 produtoEmpresa['produtoKey'] = result.key;
                                 produtoEmpresa['preco']      = produto.preco;
 
+                                
                                 produtoEmpresaRef.$add(produtoEmpresa).then(function(keyProdutoEmpresa){
+                                                
+                                    
                                     return callback(keyProdutoEmpresa.key);
                             
                                 });
-                                //return callback(result.key);
                             });
                         });
                 }
