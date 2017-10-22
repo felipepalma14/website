@@ -167,7 +167,11 @@
                                 produtoEmpresa['produtoKey'] = result.key;
                                 produtoEmpresa['preco']      = produto.preco;
 
-                                
+                                var produtosRef = ref.child('produtos/' + result.key + '/empresas');
+                                var produtosRefArray = $firebaseArray(produtosRef);
+                                //TESTE ADD KEY EMPRESA em PRODUTO
+                                produtosRefArray.$add(AuthenticationService.currentUser.uid);
+                                   
                                 produtoEmpresaRef.$add(produtoEmpresa).then(function(keyProdutoEmpresa){
                                                 
                                     

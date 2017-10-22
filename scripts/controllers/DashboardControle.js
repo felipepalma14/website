@@ -118,6 +118,7 @@
 					$scope.produtoType['preco'] = produto.preco;
 					$scope.produtoType['descricao'] = produto.descricao;
 					$scope.produtoType['empresaKey'] = AuthenticationService.currentUser.uid;
+					$scope.produtoType['produtoKey'] = $scope.produtoType.$id;
 					delete $scope.produtoType['empresas'];
 					var categoriaKey = {};
 					categoriaKey[$scope.produtoType.categoria.$id] = true;
@@ -132,7 +133,11 @@
 
 					produtosRef = ref.child('produtos/' + $scope.produtoType.$id + '/empresas');
                 	produtosRefArray = $firebaseArray(produtosRef);
-                	produtosRefArray.$add(empresas);			
+                	console.log(produtosRefArray);
+                	//TESTE ADD KEY EMPRESA em PRODUTO
+                	produtosRefArray.$add(AuthenticationService.currentUser.uid).then(function(){
+                		console.log('criado ');
+                	});			
 				}else{
 					console.log('else');
 					produto.nome = $scope.produtoType;
